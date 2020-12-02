@@ -11,9 +11,9 @@ import (
 
 const finalSum = 2020
 
-func SearchSum(s []int) int{
-	result := 0
-	Loop: for k, v1 := range s {
+func SearchSum(s []int) (result int) {
+Loop:
+	for k, v1 := range s {
 		for _, v2 := range s[k+1:] {
 			if v1+v2 == finalSum {
 				result = v1 * v2
@@ -24,19 +24,18 @@ func SearchSum(s []int) int{
 	return result
 }
 
-func SearchTripleSum(s []int) int{
-	result := 0
-Loop: for k, v1 := range s {
-	for _, v2 := range s[k+1:] {
-		for _, v3 := range s{
-			if v1+v2+v3 == finalSum {
-			result = v1 * v2 *v3
-			break Loop
+func SearchTripleSum(s []int) (result int) {
+Loop:
+	for _, v1 := range s {
+		for k, v2 := range s {
+			for _, v3 := range s[k+1:] {
+				if v1+v2+v3 == finalSum {
+					result = v1 * v2 * v3
+					break Loop
+				}
+			}
 		}
-		}
-
 	}
-}
 	return result
 }
 
@@ -45,7 +44,7 @@ func main() {
 	path := filepath.Join(".", "day01input.txt")
 	file, err := os.Open(path)
 	if err != nil {
-		log.Fatalf("error")
+		log.Fatalf("Error. Problem with opening file.")
 	}
 	defer file.Close()
 	scanner := bufio.NewScanner(file)
@@ -61,4 +60,3 @@ func main() {
 	fmt.Println("Second answer: ", SearchTripleSum(n))
 
 }
-
