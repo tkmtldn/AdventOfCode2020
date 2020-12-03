@@ -41,7 +41,7 @@ Loop:
 
 func main() {
 
-	path := filepath.Join(".", "day01input.txt")
+	path := filepath.Join(".", "day_01", "day01input.txt")
 	file, err := os.Open(path)
 	if err != nil {
 		log.Fatalf("Error. Problem with opening file.")

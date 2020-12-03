@@ -60,7 +60,7 @@ func PasswordSecondValidation(n []PasswordCollection) (result int) {
 
 func main() {
 
-	path := filepath.Join(".", "day02input.txt")
+	path := filepath.Join(".", "day_02", "day02input.txt")
 	file, err := os.Open(path)
 	if err != nil {
 		log.Fatalf("Error. Problem with opening file")
