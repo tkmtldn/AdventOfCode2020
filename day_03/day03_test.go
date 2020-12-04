@@ -10,7 +10,7 @@ import (
 )
 
 func TestDay03(t *testing.T) {
-	path := filepath.Join(".", "day_03", "day03_testinput.txt")
+	path := filepath.Join(".", "day03_testinput.txt")
 	file, err := os.Open(path)
 	if err != nil {
 		log.Fatalf("Error. Problem with opening file")
