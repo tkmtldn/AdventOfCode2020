@@ -1,21 +1,14 @@
 package main
 
 import (
-	"log"
-	"os"
 	"path/filepath"
 	"testing"
 )
 
 func TestDay04_VPC(t *testing.T) {
 	path := filepath.Join(".", "day04_testinput.txt")
-	file, err := os.Open(path)
-	if err != nil {
-		log.Fatalf("Error. Problem with opening file a")
-	}
-	defer file.Close()
+	n := ReadData(path)
 
-	n := ReadData(file)
 	result := ValidPassportCounter(n)
 	expected := 2
 	if result != expected {
@@ -25,13 +18,8 @@ func TestDay04_VPC(t *testing.T) {
 
 func TestDay04_DVPC_1(t *testing.T) {
 	path := filepath.Join(".", "day04_testValid.txt")
-	file, err := os.Open(path)
-	if err != nil {
-		log.Fatalf("Error. Problem with opening file b")
-	}
-	defer file.Close()
+	n := ReadData(path)
 
-	n := ReadData(file)
 	result := DeepValidPassportCounter(n)
 	expected := 4
 	if result != expected {
@@ -41,13 +29,8 @@ func TestDay04_DVPC_1(t *testing.T) {
 
 func TestDay04_DVPC_2(t *testing.T) {
 	path := filepath.Join(".", "day04_testInvalid.txt")
-	file, err := os.Open(path)
-	if err != nil {
-		log.Fatalf("Error. Problem with opening file c")
-	}
-	defer file.Close()
+	n := ReadData(path)
 
-	n := ReadData(file)
 	result := DeepValidPassportCounter(n)
 	expected := 0
 	if result != expected {

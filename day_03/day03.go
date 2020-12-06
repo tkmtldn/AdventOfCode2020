@@ -47,8 +47,7 @@ func CountTreesAgain(n [][]string, s [][]int) int {
 	return result
 }
 
-func main() {
-	path := filepath.Join(".", "day_03", "day03input.txt")
+func ReadData(path string) (n [][]string) {
 	file, err := os.Open(path)
 	if err != nil {
 		log.Fatalf("Error. Problem with opening file")
@@ -56,13 +55,17 @@ func main() {
 	defer file.Close()
 	scanner := bufio.NewScanner(file)
 
-	n := [][]string{}
-
 	for scanner.Scan() {
 		a := scanner.Text()
 		r := strings.Split(a, "")
 		n = append(n, r)
 	}
+	return n
+}
+
+func main() {
+	path := filepath.Join(".", "day_03", "day03input.txt")
+	n := ReadData(path)
 
 	fmt.Println("First answer: ", CountTrees(n, slope))
 	fmt.Println("Second answer: ", CountTreesAgain(n, slopes))

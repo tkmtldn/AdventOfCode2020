@@ -58,9 +58,7 @@ func PasswordSecondValidation(n []PasswordCollection) (result int) {
 	return result
 }
 
-func main() {
-
-	path := filepath.Join(".", "day_02", "day02input.txt")
+func ReadData(path string) (n []PasswordCollection) {
 	file, err := os.Open(path)
 	if err != nil {
 		log.Fatalf("Error. Problem with opening file")
@@ -68,13 +66,19 @@ func main() {
 	defer file.Close()
 	scanner := bufio.NewScanner(file)
 
-	n := []PasswordCollection{}
-
 	for scanner.Scan() {
 		a := scanner.Text()
 		p := NewPasswordCollection(a)
 		n = append(n, *p)
 	}
+
+	return n
+}
+
+func main() {
+
+	path := filepath.Join(".", "day_02", "day02input.txt")
+	n := ReadData(path)
 
 	fmt.Println("First answer: ", PasswordValidation(n))
 	fmt.Println("Second answer: ", PasswordSecondValidation(n))

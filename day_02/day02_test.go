@@ -20,4 +20,3 @@ func TestDay02(t *testing.T) {
 		t.Errorf("unexpected result on Day 2 Part 2: got %v want %v", result_2, expected_2)
 	}
 }
-

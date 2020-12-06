@@ -1,30 +1,13 @@
 package main
 
 import (
-	"bufio"
-	"log"
-	"os"
 	"path/filepath"
-	"strings"
 	"testing"
 )
 
 func TestDay03(t *testing.T) {
 	path := filepath.Join(".", "day03_testinput.txt")
-	file, err := os.Open(path)
-	if err != nil {
-		log.Fatalf("Error. Problem with opening file")
-	}
-	defer file.Close()
-	scanner := bufio.NewScanner(file)
-
-	n := [][]string{}
-
-	for scanner.Scan() {
-		a := scanner.Text()
-		r := strings.Split(a, "")
-		n = append(n, r)
-	}
+	n := ReadData(path)
 
 	result_1 := CountTrees(n, slope)
 	expected_1 := 7

@@ -3,7 +3,6 @@ package main
 import (
 	"bufio"
 	"fmt"
-	"io"
 	"log"
 	"os"
 	"path/filepath"
@@ -110,7 +109,13 @@ func pidValidation(s string) bool {
 	return (err == nil) && len(s) <= 9
 }
 
-func ReadData(file io.Reader) (n []map[string]string) {
+func ReadData(path string) (n []map[string]string) {
+	file, err := os.Open(path)
+	if err != nil {
+		log.Fatalf("Error. Problem with opening file")
+	}
+	defer file.Close()
+
 	m := make(map[string]string)
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
@@ -134,12 +139,7 @@ func ReadData(file io.Reader) (n []map[string]string) {
 
 func main() {
 	path := filepath.Join(".", "day_04", "day04input.txt")
-	file, err := os.Open(path)
-	if err != nil {
-		log.Fatalf("Error. Problem with opening file")
-	}
-	defer file.Close()
-	n := ReadData(file)
+	n := ReadData(path)
 
 	fmt.Println("First answer: ", ValidPassportCounter(n))
 	fmt.Println("Second answer: ", DeepValidPassportCounter(n))
