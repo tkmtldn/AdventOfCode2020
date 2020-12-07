@@ -9,6 +9,8 @@ import (
 	"strings"
 )
 
+// https://adventofcode.com/2020/day/6
+
 func Count1(s []string) int {
 	new_string := ""
 	result := ""

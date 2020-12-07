@@ -10,6 +10,8 @@ import (
 	"strings"
 )
 
+// https://adventofcode.com/2020/day/7
+
 type Container struct {
 	color string
 	qty   int
