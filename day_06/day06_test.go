@@ -6,7 +6,7 @@ import (
 )
 
 func TestDay06(t *testing.T){
-	path := filepath.Join(".", "test.txt")
+	path := filepath.Join(".", "test1.txt")
 	n :=ReadData(path)
 
 	res1 := CountElements(n, Count1)
