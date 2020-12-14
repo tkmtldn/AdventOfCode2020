@@ -1,9 +1,6 @@
 package main
 
-import (
-	"fmt"
-	"math/big"
-)
+import "fmt"
 
 // https://adventofcode.com/2020/day/13
 
@@ -28,12 +25,19 @@ import (
 //	return elems
 //}
 
+func Reversed(num int) string{
+	for i := 1; i <= 36; i++ {
+		if (i*2)%num == 0 {
+			fmt.Print(1)
+		} else {
+			fmt.Print(0)
+		}
+	}
+	return "\n000000000000000000000000000000001011"
+}
+
 func main() {
 	//path := filepath.Join(".", "day_12", "input.txt")
 	//inp := ReadData(path)
-	newBigInt := big.newInt(int64(someInt))
-	a1 := new(big.Int).Add(4, 2)
-	a2 := new(big.Int)
-	combined := new(big.Int).Mul(a1, a2)
-	fmt.Println(a1, a2, combined)
+	fmt.Println(Reversed(11))
 }

@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 )
 
@@ -26,24 +27,59 @@ func ReadData(path string) (elems []string) {
 	return elems
 }
 
-func main() {
-	path := filepath.Join(".", "day_14", "test.txt")
-	inp := ReadData(path)
+func BinString(e string) (key int, new string) {
+	e = strings.Replace(e, "mem[", "",1)
+	e = strings.Replace(e, "]", "",1)
+	e = strings.Replace(e, " ", "",-1)
+	f := strings.Split(e, "=")
+	key, _ = strconv.Atoi(f[0])
+	n, _ := strconv.Atoi(f[1])
+	st := strconv.FormatInt(int64(n), 2)
+	for i:=0; i<36-len(st); i++ {
+		new += "0"
+	}
+	new += st
+	return key, new
+}
+
+func CmpMask(m string, e string) (r string) {
+	m1 := strings.Split(m, "")
+	e1 := strings.Split(e, "")
+	for i:=0; i<36; i++ {
+		if m1[i] == "X" {
+			r += e1[i]
+		} else {
+			r += m1[i]
+		}
+	}
+	return r
+}
+
+var mask string
+
+func DockingData(inp []string) (sum int){
+	dict := map[int]int{}
 	for _, e := range inp {
 		if strings.HasPrefix(e, "mask"){
 			f := strings.Replace(e, "mask = ", "",1)
-			fmt.Println(f)
+			mask = f
 		}
 		if strings.HasPrefix(e, "mem"){
-			e = strings.Replace(e, "mem[", "",1)
-			e = strings.Replace(e, "]", "",1)
-			f := strings.Split(e, "=")
-			fmt.Println(f)
+			key, s := BinString(e)
+			res := CmpMask(mask, s)
+			output, _ := strconv.ParseInt(res, 2, 64)
+			dict[key]=int(output)
 		}
 	}
+	for _, v:= range dict{
+		sum +=v
+	}
+	return sum
+}
 
-	a := 1473355587699697
-	b := 692754432903757
-	fmt.Printf("%T\n", a)
-	fmt.Printf("%T\n", b)
+func main() {
+	path := filepath.Join(".", "day_14", "input.txt")
+	inp := ReadData(path)
+
+	fmt.Println("First answer: ", DockingData(inp))
 }
