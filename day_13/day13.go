@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"log"
+	"math/big"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -11,6 +12,11 @@ import (
 )
 
 // https://adventofcode.com/2020/day/13
+
+type Residue struct {
+	remainder *big.Int
+	modulus   *big.Int
+}
 
 func ReadData(path string) (elem []int) {
 	file, err := os.Open(path)
@@ -33,7 +39,7 @@ func ReadData(path string) (elem []int) {
 	return elem
 }
 
-func ReadData2(path string) []SingleBus {
+func ReadData2(path string) []*Residue {
 	file, err := os.Open(path)
 	if err != nil {
 		log.Fatalf("Error. Problem with opening file.")
@@ -42,6 +48,7 @@ func ReadData2(path string) []SingleBus {
 	scanner := bufio.NewScanner(file)
 
 	elem := []string{}
+
 	for scanner.Scan() {
 		e := scanner.Text()
 		elems := strings.Split(e, ",")
@@ -50,22 +57,22 @@ func ReadData2(path string) []SingleBus {
 		}
 	}
 
-	list_of_buses := []SingleBus{}
+	residues := []*Residue{}
+
 	for i := 1; i < len(elem); i++ {
 		result, err := strconv.Atoi(elem[i])
 		if err == nil {
-			b := SingleBus{
-				Frequency: result,
-				Interval:  i - 1,
-			}
-			list_of_buses = append(list_of_buses, b)
+			residues = append(residues, &Residue{
+				remainder: big.NewInt(int64(i-1)),
+				modulus: big.NewInt(int64(result)),
+			})
 		}
 	}
 
-	return list_of_buses
+	return residues
 }
 
-func Bus(inp []int) int {
+func ShuttleSearch(inp []int) int {
 	num_bus := 0
 	interval := 100000
 	for i := 1; i < len(inp); i++ {
@@ -78,42 +85,47 @@ func Bus(inp []int) int {
 	return num_bus * interval
 }
 
-type SingleBus struct {
-	Frequency int
-	Interval  int
+func ChineseRemainder(residues []*Residue) *big.Int {
+	acc := residues[0]
+	for i := 1; i < len(residues); i++ {
+		a1, a2 := acc.remainder, residues[i].remainder
+		n1, n2 := acc.modulus, residues[i].modulus
+		m1, m2 := new(big.Int), new(big.Int)
+
+		solution := new(big.Int).GCD(m1, m2, n1, n2)
+
+		left := new(big.Int).Mul(a1, m2)
+		left.Mul(left, n2)
+
+		right := new(big.Int).Mul(a2, m1)
+		right.Mul(right, n1)
+
+		solution.Add(left, right)
+		combined := new(big.Int).Mul(n1, n2)
+
+		solution.Mod(solution, combined)
+		acc = &Residue{remainder: solution, modulus: combined}
+	}
+	return acc.remainder
 }
 
-func Bus2(inp []SingleBus) int {
-	delta := inp[0].Frequency
-	d := int(150000000000000 / delta * delta)
-	//d:=0
-	limit := 400000000000000
-	for i := 0; i < limit; i += delta {
-		if Couting(inp, i) {
-			return i
-			break
-		}
+func ShuttleSearch2(inp []*Residue) *big.Int  {
+	chinese := ChineseRemainder(inp)
+	eq := big.NewInt(1)
+	for _, e := range inp{
+		eq.Mul(eq, e.modulus)
 	}
-	return d
-}
-
-func Couting(inp []SingleBus, i int) bool {
-	ans := true
-	for _, e := range inp {
-		if (i+e.Interval)%e.Frequency != 0 {
-			ans = false
-			break
-		}
-	}
-	return ans
+	res := big.NewInt(0)
+	res.Sub(eq, chinese)
+	return res
 }
 
 func main() {
-	//path := filepath.Join(".", "day_13", "test.txt")
 	path := filepath.Join(".", "day_13", "input.txt")
+
 	inp := ReadData(path)
-	fmt.Println(Bus(inp))
+	fmt.Println("First answer: ", ShuttleSearch(inp))
 
 	inp2 := ReadData2(path)
-	fmt.Println(Bus2(inp2))
+	fmt.Println("Second answer: ", ShuttleSearch2(inp2))
 }
