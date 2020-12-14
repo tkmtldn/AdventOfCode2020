@@ -7,6 +7,7 @@ import (
 	"math"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strconv"
 	"strings"
 )
@@ -31,13 +32,12 @@ func ReadData(path string) (elems []string) {
 	return elems
 }
 
-func BinString(e string) (key int, new string) {
-	e = strings.Replace(e, "mem[", "", 1)
-	e = strings.Replace(e, "]", "", 1)
-	e = strings.Replace(e, " ", "", -1)
-	f := strings.Split(e, "=")
-	key, _ = strconv.Atoi(f[0])
-	n, _ := strconv.Atoi(f[1])
+func BinString(e string, kv int, kn int) (key int, new string) {
+	regular := regexp.MustCompile(`[\d]+`)
+	inputs := regular.FindAllString(e, -1)
+
+	key, _ = strconv.Atoi(inputs[kv])
+	n, _ := strconv.Atoi(inputs[kn])
 	st := strconv.FormatInt(int64(n), 2)
 	for i := 0; i < 36-len(st); i++ {
 		new += "0"
@@ -46,45 +46,17 @@ func BinString(e string) (key int, new string) {
 	return key, new
 }
 
-func BinString2(e string) (value int, new string) {
-	e = strings.Replace(e, "mem[", "", 1)
-	e = strings.Replace(e, "]", "", 1)
-	e = strings.Replace(e, " ", "", -1)
-	f := strings.Split(e, "=")
-	value, _ = strconv.Atoi(strings.Trim(f[1], ""))
-	n, _ := strconv.Atoi(f[0])
-	st := strconv.FormatInt(int64(n), 2)
-	for i := 0; i < 36-len(st); i++ {
-		new += "0"
-	}
-	new += st
-	return value, new
-}
-
-func CmpMask(m string, e string) (r string) {
-	m1 := strings.Split(m, "")
-	e1 := strings.Split(e, "")
+func CmpMask(mask string, bin string, priority string) (ans string) {
+	mask1 := strings.Split(mask, "")
+	bin1 := strings.Split(bin, "")
 	for i := 0; i < 36; i++ {
-		if m1[i] == "X" {
-			r += e1[i]
+		if mask1[i] == priority {
+			ans += bin1[i]
 		} else {
-			r += m1[i]
+			ans += mask1[i]
 		}
 	}
-	return r
-}
-
-func CmpMask2(m string, e string) (r string) {
-	m1 := strings.Split(m, "")
-	e1 := strings.Split(e, "")
-	for i := 0; i < 36; i++ {
-		if m1[i] == "0" {
-			r += e1[i]
-		} else {
-			r += m1[i]
-		}
-	}
-	return r
+	return ans
 }
 
 func DockingData(inp []string) (sum int) {
@@ -95,8 +67,8 @@ func DockingData(inp []string) (sum int) {
 			mask = f
 		}
 		if strings.HasPrefix(e, "mem") {
-			key, s := BinString(e)
-			res := CmpMask(mask, s)
+			key, s := BinString(e,0, 1)
+			res := CmpMask(mask, s, "X")
 			output, _ := strconv.ParseInt(res, 2, 64)
 			dict[key] = int(output)
 		}
@@ -144,8 +116,8 @@ func DockingData2(inp []string) (sum int) {
 			mask = f
 		}
 		if strings.HasPrefix(e, "mem") {
-			val, s := BinString2(e)
-			res := CmpMask2(mask, s)
+			val, s := BinString(e,1,0)
+			res := CmpMask(mask, s, "0")
 
 			ExplorePerm(res, val)
 		}

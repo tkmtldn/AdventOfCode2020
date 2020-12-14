@@ -1,9 +1,6 @@
 package main
 
-import (
-	"fmt"
-	"regexp"
-)
+import "fmt"
 
 // https://adventofcode.com/2020/day/13
 
@@ -28,13 +25,19 @@ import (
 //	return elems
 //}
 
+func Reversed(num int) string{
+	for i := 1; i <= 36; i++ {
+		if (i*2)%num == 0 {
+			fmt.Print(1)
+		} else {
+			fmt.Print(0)
+		}
+	}
+	return "\n000000000000000000000000000000001011"
+}
 
 func main() {
 	//path := filepath.Join(".", "day_12", "input.txt")
 	//inp := ReadData(path)
-	a := "mem[8] = 11"
-	r := regexp.MustCompile(`[\d]+`)
-	res := r.FindAllString(a, -1)
-	fmt.Println(res)
-
+	fmt.Println(Reversed(11))
 }
