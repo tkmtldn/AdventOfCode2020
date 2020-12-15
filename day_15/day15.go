@@ -2,39 +2,62 @@ package main
 
 import (
 	"fmt"
-	"regexp"
+	"strconv"
+	"strings"
 )
 
-// https://adventofcode.com/2020/day/13
+// https://adventofcode.com/2020/day/15
 
-//func ReadData(path string) (elems []Instruction) {
-//	file, err := os.Open(path)
-//	if err != nil {
-//		log.Fatalf("Error. Problem with opening file.")
-//	}
-//	defer file.Close()
-//	scanner := bufio.NewScanner(file)
-//
-//	for scanner.Scan() {
-//		e := scanner.Text()
-//		o := string(e[0])
-//		a, _ := strconv.Atoi(e[1:])
-//		el := Instruction{
-//			Operation: o,
-//			Argument:  a,
-//		}
-//		elems = append(elems, el)
-//	}
-//	return elems
-//}
+type Numbers struct {
+	pos      int
+	last_pos int
+	repeat   int
+}
+
+func RambunctiousRecitation (s string, limit int) string {
+	inp := strings.Split(s, ",")
+	dict := map[string]Numbers{}
+
+	last_spoken := ""
+	for i := 0; i < len(inp); i++ {
+		dict[inp[i]] = Numbers{
+			pos:      i+1,
+			last_pos: i+1,
+			repeat:   1,
+		}
+		last_spoken = inp[i]
+	}
+
+	for i := len(inp)+1; i <= limit; i++ {
+		if val, ok := dict[last_spoken]; ok {
+			if val.repeat == 1 {
+				last_spoken = "0"
+			}
+			if val.repeat > 1 {
+				last_spoken = strconv.Itoa(val.last_pos - val.pos)
+			}
+		} else {
+			val := Numbers{
+				pos : i-1,
+				last_pos: i-1,
+				repeat: 1,
+			}
+			dict[last_spoken] = val
+			last_spoken = "0"
+
+		}
+		if v, ok := dict[last_spoken]; ok {
+			v.repeat++
+			v.pos, v.last_pos = v.last_pos, i
+			dict[last_spoken] = v
+		}
+	}
+	return last_spoken
+}
 
 
 func main() {
-	//path := filepath.Join(".", "day_12", "input.txt")
-	//inp := ReadData(path)
-	a := "mem[8] = 11"
-	r := regexp.MustCompile(`[\d]+`)
-	res := r.FindAllString(a, -1)
-	fmt.Println(res)
-
+	s := "2,0,1,7,4,14,18"
+	fmt.Println(RambunctiousRecitation(s, 2020))
+	fmt.Println(RambunctiousRecitation(s, 30000000))
 }
