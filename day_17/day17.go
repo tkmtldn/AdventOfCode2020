@@ -1,7 +1,5 @@
 package main
 
-import "fmt"
-
 // https://adventofcode.com/2020/day/13
 
 //func ReadData(path string) (elems []Instruction) {
@@ -25,19 +23,7 @@ import "fmt"
 //	return elems
 //}
 
-func Reversed(num int) string{
-	for i := 1; i <= 36; i++ {
-		if (i*2)%num == 0 {
-			fmt.Print(1)
-		} else {
-			fmt.Print(0)
-		}
-	}
-	return "\n000000000000000000000000000000001011"
-}
-
 func main() {
 	//path := filepath.Join(".", "day_12", "input.txt")
 	//inp := ReadData(path)
-	fmt.Println(Reversed(11))
 }
