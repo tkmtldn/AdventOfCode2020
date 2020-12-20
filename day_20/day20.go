@@ -12,7 +12,17 @@ import (
 
 // https://adventofcode.com/2020/day/20
 
-func ReadData(path string) (map[int][]string) {
+type Frame struct {
+	full_frame          []string
+	inner_frame         []string
+	all_sides           []string
+	sides               map[int]string
+	reversed            map[int]string
+	sides_neighbours    map[int]int
+	reversed_neighbours map[int]int
+}
+
+func ReadData(path string) (map[int]Frame) {
 	file, err := os.Open(path)
 	if err != nil {
 		log.Fatalf("Error. Problem with opening file.")
@@ -20,14 +30,18 @@ func ReadData(path string) (map[int][]string) {
 	defer file.Close()
 	scanner := bufio.NewScanner(file)
 
-	elems := map[int][]string{}
+	new_elems := map[int]Frame{}
+
 	k := 0
 	v := []string{}
+	f := Frame{}
 
 	for scanner.Scan() {
 		e := scanner.Text()
 		if e == "" {
-			elems[k] = Ribs(v)
+			f.full_frame = v
+			new_elems[k] = f
+			f = Frame{}
 			v = []string{}
 			continue
 		}
@@ -39,7 +53,7 @@ func ReadData(path string) (map[int][]string) {
 		}
 		v = append(v, e)
 	}
-	return elems
+	return new_elems
 }
 
 func Reverse(s string) (result string) {
@@ -49,61 +63,103 @@ func Reverse(s string) (result string) {
 	return
 }
 
-func Ribs(s []string) (result []string) {
-	top := ""
-	left := ""
-	right := ""
-	bottom := ""
+func Ribs(s []string) ([]string, map[int]string, map[int]string, []string) {
+	side1 := ""
+	side2 := ""
+	side3 := ""
+	side4 := ""
+
+	inner_frame := []string{}
 
 	limit := len(s) - 1
 	for i, e := range s {
 		dict := strings.Split(e, "")
 		if i == 0 {
-			top += strings.Join(dict, "")
+			side1 += strings.Join(dict, "")
 		}
 		if i == limit {
-			bottom += strings.Join(dict, "")
+			side3 += strings.Join(dict, "")
 		}
-		left += dict[0]
-		right += dict[limit]
+		side2 += dict[0]
+		side4 += dict[limit]
+		line := strings.Join(dict[1:limit], "")
+		inner_frame = append(inner_frame, line)
 	}
-	result = append(result, top)
-	result = append(result, right)
-	result = append(result, bottom)
-	result = append(result, left)
-	result = append(result, Reverse(top))
-	result = append(result, Reverse(right))
-	result = append(result, Reverse(bottom))
-	result = append(result, Reverse(left))
-	return
+
+	map_sides := map[int]string{
+		1: side1,
+		2: side2,
+		3: side3,
+		4: side4,
+	}
+
+	map_reversed_sides := map[int]string{
+		1: Reverse(side1),
+		2: Reverse(side2),
+		3: Reverse(side3),
+		4: Reverse(side4),
+	}
+
+	all_sides := []string{}
+	for _, v := range map_sides {
+		all_sides = append(all_sides, v)
+	}
+	for _, v := range map_reversed_sides {
+		all_sides = append(all_sides, v)
+	}
+	return all_sides, map_sides, map_reversed_sides, inner_frame
 }
 
-func JurassicJigsaw(inp map[int][]string) int {
-	data := []string{}
-	for _, v := range inp {
-		data = append(data, v...)
+func PrepareData(inp map[int]Frame) map[int]Frame {
+	new := map[int]Frame{}
+	short := map[int][]string{}
+
+	for k, v:= range inp{
+		all, _, _, _ := Ribs(v.full_frame)
+		short[k] = all
 	}
 
-	values := map[int]int{}
 	for k, v := range inp {
-		count := 0
-		for _, vv := range v {
-			for _, e := range data {
-				if vv == e {
-					count++
+		f := Frame{}
+		all, sides, reversed, inner := Ribs(v.full_frame)
+		f.all_sides = all
+		f.sides = sides
+		f.reversed = reversed
+		f.inner_frame = inner
+		f.full_frame = v.full_frame
+
+		dict_side_n := map[int]int{}
+		for sides_key, sides_value := range sides {
+			for short_key, short_value := range short {
+				for _, sv := range short_value {
+					if (sv == sides_value) && (short_key != sides_key) && (short_key != k) {
+						//fmt.Println("In", k, "at postion", sides_key, "we have", sides_value, "with", short_key)
+						dict_side_n[sides_key] = short_key
+					}
 				}
 			}
 		}
-		values[k] = (count - 8) / 2
+		f.sides_neighbours = dict_side_n
+		new[k] = f
 	}
 
+	return new
+}
+
+func JurassicJigsaw(input map[int]Frame) int {
+
+	all_frames := PrepareData(input)
+	//for k, v := range all_frames{
+	//	fmt.Println(k, v.sides_neighbours)
+	//}
+
 	result := 1
-	for k, v := range values {
-		fmt.Println(k, v)
-		if v == 2 {
+	for k, v := range all_frames {
+		if len(v.sides_neighbours) == 2 {
 			result *= k
 		}
 	}
+
 	return result
 }
 
