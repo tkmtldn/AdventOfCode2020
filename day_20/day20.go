@@ -13,13 +13,12 @@ import (
 // https://adventofcode.com/2020/day/20
 
 type Frame struct {
-	full_frame          []string
-	inner_frame         []string
-	all_sides           []string
-	sides               map[int]string
-	reversed            map[int]string
-	sides_neighbours    map[int]int
-	reversed_neighbours map[int]int
+	full_frame       []string
+	inner_frame      []string
+	all_sides        []string
+	sides            map[int]string
+	reversed         map[int]string
+	sides_neighbours map[int]int
 }
 
 func ReadData(path string) (map[int]Frame) {
@@ -114,7 +113,7 @@ func PrepareData(inp map[int]Frame) map[int]Frame {
 	new := map[int]Frame{}
 	short := map[int][]string{}
 
-	for k, v:= range inp{
+	for k, v := range inp {
 		all, _, _, _ := Ribs(v.full_frame)
 		short[k] = all
 	}
@@ -149,10 +148,6 @@ func PrepareData(inp map[int]Frame) map[int]Frame {
 func JurassicJigsaw(input map[int]Frame) int {
 
 	all_frames := PrepareData(input)
-	//for k, v := range all_frames{
-	//	fmt.Println(k, v.sides_neighbours)
-	//}
-
 	result := 1
 	for k, v := range all_frames {
 		if len(v.sides_neighbours) == 2 {
@@ -163,8 +158,37 @@ func JurassicJigsaw(input map[int]Frame) int {
 	return result
 }
 
+func JurassicJigsawSecond(input map[int]Frame) int {
+
+	all_frames := PrepareData(input)
+	column := 0
+	column_down := 0
+	next_column := 0
+
+	for k, v := range all_frames {
+		if len(v.sides_neighbours) == 2 {
+			this := 0
+			if _, ok := v.sides_neighbours[2]; ok {
+				this++
+			}
+			if _, ok := v.sides_neighbours[2]; ok {
+				this++
+			}
+			if this == 2 {
+				column = k
+				column_down = v.sides_neighbours[3]
+				next_column = v.sides_neighbours[2]
+			}
+		}
+	}
+	fmt.Println(column, column_down, next_column)
+
+	return 0
+}
+
 func main() {
 	path := filepath.Join(".", "day_20", "test.txt")
 	inp := ReadData(path)
 	fmt.Println("First answer:", JurassicJigsaw(inp))
+	fmt.Println("Second answer:", JurassicJigsawSecond(inp))
 }
