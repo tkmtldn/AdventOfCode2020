@@ -6,62 +6,89 @@ import (
 	"strings"
 )
 
-func CrabCups(cups []int) {
-	for i := 0; i < 10; i++ {
+func GetStep(dest int, cups []int) (ans int) {
+	for k, v := range cups {
+		if v == dest {
+			ans = k
+			break
+		}
+	}
+	return
+}
 
+func CrabCups(cups []int) string {
+	for i := 0; i < 100; i++ {
+		new_cups := []int{}
+		fmt.Println(cups)
 		current := cups[i%9]
 		pick_up0 := cups[(i+1)%9]
 		pick_up1 := cups[(i+2)%9]
 		pick_up2 := cups[(i+3)%9]
 		destination := GetDestination(current, pick_up0, pick_up1, pick_up2)
+		step := GetStep(destination, cups)
 
-		new_cups := []int{}
-		new_cups1 := []int{}
-		new_cups2 := []int{}
-		position := 0
-		for k := 0; k < 9; k++ {
-			if cups[k] == destination {
-				position = k
-			}
-		}
-		new_cups = append(new_cups, destination)
-		new_cups = append(new_cups, pick_up0)
-		new_cups = append(new_cups, pick_up1)
-		new_cups = append(new_cups, pick_up2)
-		for k := position + 1; k < 9; k++ {
-			if (cups[k] != destination) || (cups[k] != pick_up0) || (cups[k] != pick_up1) || (cups[k] != pick_up2) {
-				new_cups1 = append(new_cups1, cups[k])
-
-			}
-		}
-		for k := 0; k <= position; k++ {
-			if cups[k] == destination {
+		for i, _ := range cups {
+			if cups[i] == pick_up0 || cups[i] == pick_up1 || cups[i] == pick_up2 {
 				continue
-			} else if cups[k] == pick_up0 {
-				continue
-			} else if cups[k] == pick_up1 {
-				continue
-			} else if cups[k] == pick_up2 {
-				continue
+			} else if cups[i] == destination {
+				new_cups = append(new_cups, destination)
+				new_cups = append(new_cups, pick_up0)
+				new_cups = append(new_cups, pick_up1)
+				new_cups = append(new_cups, pick_up2)
 			} else {
-				new_cups2 = append(new_cups2, cups[k])
+				new_cups = append(new_cups, cups[i])
 			}
 		}
-		fmt.Println(new_cups2, new_cups, new_cups1)
-		final := []int{}
-		for _, e := range new_cups2{
-			final = append(final,e)
+		if step == 0 {
+			new_cups = GetNewCup(new_cups, 3)
+		} else if step == 1 {
+			new_cups = GetNewCup(new_cups, 2)
+		} else if step == 2 {
+			new_cups = GetNewCup(new_cups, 1)
+		} else if i%9 == 6 {
+			new_cups = GetNewCup(new_cups, 2)
+		} else if i%9 == 7 {
+			new_cups = GetNewCup(new_cups, 1)
+		} else if i%9 == 8 {
+			new_cups = GetNewCup(new_cups, 0)
+		} else {
 		}
-		for _, e := range new_cups{
-			final = append(final,e)
-		}
-		for _, e := range new_cups1{
-			final = append(final,e)
-		}
-		cups = final
-		//fmt.Println(i+2, cups, position)
-		//fmt.Println(cups, pick_up0, pick_up1, pick_up2, "====", destination)
+		cups = new_cups
 	}
+
+	key := 0
+	ans := []int{}
+	for k, v := range cups {
+		if v == 1 {
+			key = k
+		}
+	}
+	for k, v:= range cups{
+		if k>=key{
+			ans = append(ans, v)
+		}
+	}
+	for k, v:= range cups{
+		if k<key{
+			ans = append(ans, v)
+		}
+	}
+	return strings.Trim(strings.Join(strings.Fields(fmt.Sprint(ans)), ""), "[]")
+}
+
+func GetNewCup(new_cups []int, num int) []int {
+	nc := []int{}
+	for k, v := range new_cups {
+		if k >= num {
+			nc = append(nc, v)
+		}
+	}
+	for k, v := range new_cups {
+		if k < num {
+			nc = append(nc, v)
+		}
+	}
+	return nc
 }
 
 func GetDestination(curr, p0, p1, p2 int) int {
@@ -89,5 +116,5 @@ func main() {
 		cups = append(cups, i)
 	}
 
-	CrabCups(cups)
+	fmt.Println("First answer:", CrabCups(cups))
 }

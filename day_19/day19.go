@@ -91,19 +91,19 @@ func MonsterMessages(d map[string]string, m []string) int {
 				v = strings.Replace(v, "|", " | ", -1)
 				v = strings.Replace(v, "[", " [ ", -1)
 				v = strings.Replace(v, "]", " ] ", -1)
-				replacing[k] = "[" + v + "]"
+				replacing[k] = "[ " + v + " ]"
 				delete(d, k)
 			}
 		}
 	}
 	for k, v := range replacing {
-		fmt.Println(k, "==", v)
+		fmt.Println(k, "==", strings.Split(v, " "))
 	}
 	return 0
 }
 
 func main() {
 	path := filepath.Join(".", "day_19", "test.txt")
-	d, m := ReadData(path)
-	fmt.Println(MonsterMessages(d, m))
+	gram, words := ReadData(path)
+	fmt.Println(MonsterMessages(gram, words))
 }
